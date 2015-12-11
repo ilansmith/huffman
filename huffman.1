@@ -1,0 +1,47 @@
+.TH huffman 1 "October 2003" "Compression utilities" "IAS Software"
+
+.SH NAME
+\fBhuffman\fR \- compress and decompress text files
+
+.SH SYNOPSIS
+.PD 0
+\fBhuffman\fR [OPTIONS] <\fB\-e\fR \fIfile_name\fR | \fB\-d\fR \fI
+file_name.huf\fR>
+.P
+.B huffman
+[
+.B \-h
+]
+.PD 1
+
+.SH DESCRIPTION
+\fBhuffman\fR uses the \fIHuffman Coding Algorithm\fR to create a new 
+representation of the characters in the text file. This representation is a 
+prefix code in which the character represention length is not constant: 
+characters with a heigh frequency of appearence have a shorter represention 
+than characters that with a low frequency of appearence.
+.P
+Note that only the 128 bit standard ASCII character set is supported.
+
+.SH OPTIONS
+.IP \fB-p\fR
+print the  corresponding huffman tree
+.IP \fB-k\fR
+keep the original file
+.IP \fB-s\fR
+display general statistics
+.IP \fB-v\fR
+display verbose output (implies -s)
+.IP "\fB-e\fR \fIfile_name\fR"
+encode the text file \fIfile_name\fR
+.IP "\fB-d\fR \fIfile_name.huf\fR"
+decode the compressed file \fIfile_name.huf\fR
+.IP \fB-h\fR
+print this message and exit
+
+.SH SEE ALSO
+Introduction to Algorithms 2nd Ed, Chap. 16.3 by Cormaen, Leiserson, Rivest and
+Stein
+
+.SH AUTHOR
+Ilan A. Smith
