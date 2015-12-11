@@ -93,7 +93,8 @@ static int huff_read_minor_buf(huff_reader_t *reader)
 	return -1;
 
     reader->minor_buf = reader->major_buf[reader->major_offset];
-    reader->major_offset = ++reader->major_offset % reader->buf_length;
+    reader->major_offset++;
+    reader->major_offset %= reader->buf_length;
     return 0;
 }
 
@@ -147,7 +148,8 @@ int huff_read_bit(huff_reader_t *reader, bit_t *bit)
 	return -1;
 	
     *bit = (reader->minor_buf & one_bit[reader->minor_offset]) ? ONE : ZERO;
-    reader->minor_offset = ++reader->minor_offset % MAX_MINOR_BUF_SIZE;
+    reader->minor_offset++;
+    reader->minor_offset %= MAX_MINOR_BUF_SIZE;
     return 0;
 }
 
@@ -233,7 +235,8 @@ static int huff_write_major_buf(huff_writer_t *writer)
 static int huff_write_minor_buf(huff_writer_t *writer)
 {
     writer->major_buf[writer->major_offset] = writer->minor_buf;
-    writer->major_offset = ++writer->major_offset % MAX_MAJOR_BUF_SIZE;
+    writer->major_offset++;
+    writer->major_offset %= MAX_MAJOR_BUF_SIZE;
     writer->buf_length++;
     writer->minor_buf = RESET_CHAR;
 
@@ -290,7 +293,8 @@ int huff_write_bit(huff_writer_t *writer, bit_t bit)
     if (bit)
 	writer->minor_buf |= one_bit[writer->minor_offset];
 
-    writer->minor_offset = ++writer->minor_offset % MAX_MINOR_BUF_SIZE;
+    writer->minor_offset++;
+    writer->minor_offset %= MAX_MINOR_BUF_SIZE;
     if (!(writer->minor_offset))
 	return huff_write_minor_buf(writer);
 
