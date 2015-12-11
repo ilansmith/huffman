@@ -182,7 +182,7 @@ Exit:
     return;
 }
 
-void huff_print_tree()
+void huff_print_tree(void)
 {
     huff_print_tree_rec(tree_root, 0, HUFF_PRINT_ROOT);
     printf("\n");
@@ -424,7 +424,7 @@ static char *huff_print_length(u32 file_length)
     return length_buf;
 }
 
-static void huff_print_statistics()
+static void huff_print_statistics(void)
 {
     printf("file %s: %s\n", compressed_file_name,
 	huff_print_length(compressed_file_length));
@@ -437,7 +437,7 @@ static void huff_print_statistics()
     }
 }
 
-static void huff_print_verbose()
+static void huff_print_verbose(void)
 {
     int header_byte_remainder = header_length % BYTE;
     u32 breakdown[ANSI_CHAR_SET_CARDINALITY]; /* length frequency */

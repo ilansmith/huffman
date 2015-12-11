@@ -120,7 +120,7 @@ static void huff_tree_insert_node(huff_tree_node_t *node)
  *   - Insert the new node into the remaining minimum priority queue.
  * Return 0 if successful, otherwise -1.
  */
-static int huff_encoder_create_tree()
+static int huff_encoder_create_tree(void)
 {
     huff_tree_node_t *node = NULL;
     int ch;
@@ -209,7 +209,7 @@ static int huff_encoder_dictionary_gen(huff_tree_node_t *node,
  * huff_encoder_dictionary_gen() is called to create the dictionary.
  * Return 0 if successful, otherwise -1.
  */
-static int huff_encoder_create_dictionary()
+static int huff_encoder_create_dictionary(void)
 {
     bit_t *stack = NULL;
     int ret;
@@ -414,7 +414,7 @@ static int huff_encoder_compress(huff_reader_t *reader, huff_writer_t *writer)
 }
 
 /* Encode the file text_file_name. */
-int huffman_encode()
+int huffman_encode(void)
 {
     huff_reader_t *reader = NULL;
     huff_writer_t *writer = NULL;

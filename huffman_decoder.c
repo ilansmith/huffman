@@ -171,7 +171,7 @@ static int huff_decoder_insert_node(u8 character, bit_t *stack)
 }
 
 /* creating a huffman tree based on the dictionary in the header */
-static int huff_decoder_creat_tree()
+static int huff_decoder_creat_tree(void)
 {
     u8 ch;
     
@@ -250,7 +250,7 @@ static int huff_decoder_decompress(huff_reader_t *reader, huff_writer_t *writer)
 
 /* Encode the file text_file_name. */
 /* Decode the file text_file_name.huf */
-int huffman_decode()
+int huffman_decode(void)
 {
     huff_reader_t *reader = NULL;
     huff_writer_t *writer = NULL;

@@ -36,19 +36,19 @@ static u8 one_bit[8] = {BIT_ONE_0,BIT_ONE_1, BIT_ONE_2, BIT_ONE_3, BIT_ONE_4,
 /* Generic functions for allocating a new struct huff_io_t.
  * Used by huff_writer_alloc() and huff_reader_alloc()
  */
-static void *huff_io_alloc()
+static void *huff_io_alloc(void)
 {
     return (void *)calloc(1, sizeof(struct huff_io_t));
 }
 
 /* Allocates a new huff_writer_t */
-static huff_writer_t *huff_writer_alloc()
+static huff_writer_t *huff_writer_alloc(void)
 {
     return ((huff_writer_t *)huff_io_alloc());
 }
 
 /* Allocates a new huff_reader_t */
-static huff_reader_t *huff_reader_alloc()
+static huff_reader_t *huff_reader_alloc(void)
 {
     return ((huff_reader_t *)huff_io_alloc());
 }
