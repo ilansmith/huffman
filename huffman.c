@@ -397,8 +397,7 @@ static char *huff_print_length(u32 file_length)
 #define BUFFER_LENGTH 10
     static char length_buf[BUFFER_LENGTH];
 
-    if (length_buf)
-	memset(length_buf, 0, BUFFER_LENGTH);
+    memset(length_buf, 0, BUFFER_LENGTH);
 
     if (file_length == 1)
 	snprintf(length_buf, BUFFER_LENGTH -1, "1byte");
