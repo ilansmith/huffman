@@ -227,20 +227,19 @@ static void huff_usage(char* argv[])
 {
 #define ASCII_COPYRIGHT 169
 
-    printf("Usage: %s [-p] [-k] [-s] [-v] <-e <file_name> | " 
-	"-d <file_name.huf>>\n", argv[0]);
-    printf("       or\n");
+    printf("Usage: %s [-p] [-k] [-s] [-v] <-e file_name | " 
+	"-d file_name.huf>\n", argv[0]);
     printf("       %s [-h]\n\n", argv[0]);
-    printf("  Where -h   print this message and exit\n");
-    printf("        -p   print the corresponding huffman tree\n");
+    printf("  Where -p   print the corresponding huffman tree\n");
     printf("        -k   keep the original file\n");
     printf("        -s   display general statistics\n");
     printf("        -v   display verbose output (implies -s)\n");
     printf("        -e   encode the text file 'file_name'\n");
-    printf("        -d   decode the compressed file 'file_name.huf'\n\n");
+    printf("        -d   decode the compressed file 'file_name.huf'\n");
+    printf("        -h   print this message and exit\n\n");
     printf("NOTE:\n");
-    printf("- All compressed files must have a '.huf' suffix!\n");
-    printf("- Currently, files must contain 128 bit ANSI characters only\n");
+    printf("- All compressed files must have a '.huf' suffix.\n");
+    printf("- Only 128 bit standard ASCII character set is supported.\n");
     printf("\n%c IAS, October 2003\n", ASCII_COPYRIGHT);
 }
 
