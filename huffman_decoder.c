@@ -42,7 +42,7 @@ static int huff_decoder_epilogue(huff_reader_t *reader, huff_writer_t *writer)
 
 static int huff_decoder_read_file_length(huff_reader_t *reader)
 {
-    char length_type;
+    u8 length_type;
 	
     huff_read_u8(reader, &length_type);
 
