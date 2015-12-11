@@ -138,13 +138,13 @@ typedef struct huff_io_t {
     while major_offset is not reset
       if read u8
         read minor_buf
-        perform huff_read_minor_buf() to complete reading 8 bits
+        do huff_read_minor_buf() to complete reading 8 bits
       if read bit
         while minor_offset is not reset
           read an extra bit from minor_buf
           advance minor_offset % MAX_MINOR_BUF_SIZE
-        perform huff_read_minor_buf()
-    perform huff_read_major_buf()
+        do huff_read_minor_buf()
+    do huff_read_major_buf()
 
 The following methods are used for reading:
 - int huff_read_bit(huff_reader_t *reader, bit_t *bit);
@@ -161,14 +161,14 @@ The following methods are used for reading:
   while there is more to write
     while buf_length < MAX_MAJOR_BUF_SIZE
       if write u8
-        perform huff_write_minor_buf()
+        do huff_write_minor_buf()
 	fill an extra minor_offset bits in minor_buf
       if write bit
         while minor_offset is not reset
           write an extra bit into minor_buf
           advance minor_offset % MAX_MINOR_BUF_SIZE
-        perform huff_write_minor_buf()
-    perform huff_write_major_buf()
+        do huff_write_minor_buf()
+    do huff_write_major_buf()
 
 The following methods are used for writing:
 - int huff_write_bit(huff_writer_t *writer, bit_t bit);
