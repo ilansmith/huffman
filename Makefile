@@ -1,6 +1,6 @@
 huffman: huffman.o huffman_decoder.o huffman_encoder.o huffman_io.o
 	gcc -Wall -o huffman huffman.o huffman_decoder.o huffman_encoder.o \
-	    huffman_io.o -lm
+	             huffman_io.o -lm
 
 huffman.o: huffman.c huffman.h
 	gcc -Wall -c huffman.c
