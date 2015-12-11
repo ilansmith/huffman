@@ -35,17 +35,17 @@ typedef unsigned short u16;
 typedef unsigned long u32;
 
 typedef struct node {
-    struct node *left_son;
-    struct node *right_son;
-    struct node *next;
-    u8 character;
-    int frequency;
+	struct node *left_son;
+	struct node *right_son;
+	struct node *next;
+	u8 character;
+	int frequency;
 } huff_tree_node_t;
 
 typedef enum bit_t {
-    ZERO = 0,
-    ONE = 1,
-    NO_BIT = 2,
+	ZERO = 0,
+	ONE = 1,
+	NO_BIT = 2,
 } bit_t;
 
 extern char compressed_file_name[MAX_FILE_NAME_SIZE];
@@ -58,7 +58,7 @@ extern int huffman_print_tree;
 extern huff_tree_node_t *tree_root;
 extern bit_t *dictionary[ANSI_CHAR_SET_CARDINALITY];
 
-//for statistics option
+/* for statistics option */
 extern int huffman_keep_file;
 extern u32 compressed_file_length;
 extern u32 header_length;
@@ -70,7 +70,7 @@ void huff_tree_node_free(huff_tree_node_t *node);
 void huff_delete_tree(huff_tree_node_t *node);
 void huff_print_tree();
 
-/* bit stack opperations*/
+/* bit stack opperations */
 bit_t *bit_stack_alloc(int num);
 bit_t *bit_stack_clone(bit_t *stack, int offset);
 void bit_stack_free(bit_t *ptr);

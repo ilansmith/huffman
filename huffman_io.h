@@ -8,12 +8,12 @@
 #define MAX_MINOR_BUF_SIZE 8
 
 typedef struct huff_io_t {
-    FILE *file;
-    u8 major_buf[MAX_MAJOR_BUF_SIZE];
-    u8 minor_buf;
-    u16 major_offset;
-    u8 minor_offset;
-    size_t buf_length;
+	FILE *file;
+	u8 major_buf[MAX_MAJOR_BUF_SIZE];
+	u8 minor_buf;
+	u16 major_offset;
+	u8 minor_offset;
+	size_t buf_length;
 } huff_writer_t, huff_reader_t;
 
 huff_reader_t *huff_reader_open(const char *rfile);
