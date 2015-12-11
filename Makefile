@@ -1,3 +1,6 @@
+APP_DIR=/usr/local/bin
+MAN_DIR=/usr/local/man/man1
+
 huffman: huffman.o huffman_decoder.o huffman_encoder.o huffman_io.o
 	gcc -Wall -o $@ huffman.o huffman_decoder.o huffman_encoder.o \
 	             huffman_io.o -lm
@@ -15,10 +18,13 @@ huffman_io.o: huffman_io.c huffman_io.h huffman.h
 	gcc -Wall -c huffman_io.c
 
 install:
-	cp huffman /usr/local/bin/huffman
+	install -C --strip --mode=755 huffman $(APP_DIR)
+	install -C man1/huffman.1 $(MAN_DIR)
 
 uninstall:
-	rm -f /usr/local/bin/huffman
+	rm -f $(APP_DIR)/huffman
+	rm -f $(MAN_DIR)/huffman.1
+
 clean:
 	rm -f *.o
 
