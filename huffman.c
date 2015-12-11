@@ -227,7 +227,7 @@ static void huff_usage(char* argv[])
 {
 #define ASCII_COPYRIGHT 169
 
-    printf("Usage: %s [-p] [-k] [-s] [-v] <-e file_name | " 
+    printf("Usage: %s [-p] [-k] [-s | -v] <-e file_name | " 
 	"-d file_name.huf>\n", argv[0]);
     printf("       %s [-h]\n\n", argv[0]);
     printf("  Where -p   print the corresponding huffman tree\n");
@@ -347,17 +347,16 @@ static int huff_parse_command_line(int argc, char* argv[])
 	    expected_arg_num++;
 	    ret |= HUFFMAN_OPT_KEEP_FILE;
 	    break;
+	case 'v':
+	    if (ret & HUFFMAN_OPT_VERBOSE)
+		goto Error;
+	    ret |= HUFFMAN_OPT_VERBOSE;
+	    /* fall through */
 	case 's':
 	    if (ret & HUFFMAN_OPT_STATISTICS)
 		goto Error;
 	    expected_arg_num++;
 	    ret |= HUFFMAN_OPT_STATISTICS;
-	    break;
-	case 'v':
-	    if (ret & HUFFMAN_OPT_VERBOSE)
-		goto Error;
-	    expected_arg_num++;
-	    ret |= HUFFMAN_OPT_VERBOSE;
 	    break;
 	case 'e':
 	    if ((ret & HUFFMAN_OPT_DECODE) ||
@@ -426,13 +425,13 @@ static char *huff_print_length(u32 file_length)
 
 static void huff_print_statistics(void)
 {
-    printf("file %s: %s\n", compressed_file_name,
+    printf("%s: %s\n", compressed_file_name,
 	huff_print_length(compressed_file_length));
-    printf("file %s:     %s\n", uncompressed_file_name,
+    printf("%s:     %s\n", uncompressed_file_name,
 	huff_print_length(uncompressed_file_length));
     if (uncompressed_file_length)
     {
-	printf("file length ratio: %.2f%%\n", (double)compressed_file_length /
+	printf("length ratio: %.2f%%\n", (double)compressed_file_length /
 	   uncompressed_file_length * 100);
     }
 }
@@ -445,6 +444,9 @@ static void huff_print_verbose(void)
     double character_weight[ANSI_CHAR_SET_CARDINALITY];
     double mean = 0, std_dev = 0, var = 0;
     double uncompressed_file_length_in_bytes = (double)uncompressed_file_length;
+
+    if (!uncompressed_file_length)
+	return;
 
     /* printing header details */
     printf("huffman header size: %ibytes", (int)(header_length / BYTE));
@@ -523,9 +525,9 @@ static void huff_print_verbose(void)
     }
 
     /* printing: mean, standard deviation and varince */
-    printf("\n%1cmean: %.2fbits/character\n", ' ', mean);
-    printf("%1cstandard deviation: %.2f\n", ' ', std_dev);
-    printf("%1cvarience: %.2f\n", ' ', var);
+    printf("\nmean: %.2fbits/character\n", mean);
+    printf("standard deviation: %.2f\n", std_dev);
+    printf("varience: %.2f\n", var);
 }
 
 int main(int argc, char* argv[])
@@ -547,16 +549,11 @@ int main(int argc, char* argv[])
     if ((action & HUFFMAN_OPT_DECODE) && huffman_decode())
 	goto Error;
 
-    if (action & HUFFMAN_OPT_VERBOSE)
-    {
-	action &= ~HUFFMAN_OPT_STATISTICS;
-	huff_print_statistics();
-	if (uncompressed_file_length)
-	    huff_print_verbose();
-    }
-
     if (action & HUFFMAN_OPT_STATISTICS)
 	huff_print_statistics();
+
+    if (action & HUFFMAN_OPT_VERBOSE)
+	huff_print_verbose();
 
     return 0;
 

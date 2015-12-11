@@ -113,13 +113,13 @@ static int huff_decoder_parse_header(huff_reader_t *reader,
 {
     int i;
 
-    /* reading the uncompressed file length and the character set cardinality */
-
+    /* read the uncompressed file length */
     if (huff_decoder_read_file_length(reader))
     {
 	printf("it is not possible for a huffman file to be of zero length\n");
 	return -1;
     }
+    /* read the uncompressed file character set cardinality */
     if (huff_decoder_read_char_set_cardinality(reader))
 	return -1;
 
