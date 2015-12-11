@@ -1,0 +1,322 @@
+APPLICATION: Huffman Encoder-Decoder
+AUTHOR: I. A. Smith
+LITRITURE:
+    [1] - Introduction to Algorithms 2nd Ed, Chap. 16.3 (pp. 385-391)
+
+Overview
+========
+Huffman [1] codes are a widely used and very effective technique for compressing
+data; saving of 20% to 90% are typical, depending on the characteristics of the
+data being compressed.
+
+Huffmand's greedy algorithm uses a table of the frequencies of occurrence or the
+characters to build up an optimal way of representing each character as a binary
+string.
+
+pseudocode for constructing a huffman tree
+------------------------------------------
+where:
+- C: is a set of characters
+- |C|: is the number of characters in C
+- Q: is a min-priority queue
+
+Huffman(C)
+1 n <- |C|
+2 Q <- C
+3 for i <- 1 to n-1
+4   do allocate a new node z
+5     left[z] <- x <- EXTRACT-MIN(Q)
+6     right[z] <- y <- EXTRACT-MIN(Q)
+7     freq(z) <- freq(x)+freq(y)
+8     INSERT(Q, z)
+9 return EXTRACT-MIN(Q)
+
+HLD
+===
+io
+--
+For reading files and writing to files the following types are used:
+- huff_reader_t
+- huff_writer_t
+
+flow
+----
+- parse command line
+- encode / decode
+- perform options
+
+encoder
+-------
+- initialize reader and writer
+- parsing input file and creating a frequency table
+- creating a huffman tree
+- creating a dictionary
+- creating a *.huf file
+- cleaning up
+
+decoder
+-------
+- initialize reader and writer
+- parsing *.huf file's header
+- creating a huffman tree
+- recreating the original file
+- cleaning up
+
+LLD
+===
+compressed *.huf file format
+----------------------------
+A compressed *.huf file has the following structure:
+
+                    HEADER                                   ENCODING
+    /                                       \       /                       \
+   /                                         \     /                         \
+  +-------+-----+---------+------+-----+------+...+---------------------...---+
+  | f.l.t | f.l | f.c.s.c | char | r.l | rep  |...|         coded data        |
+  |-------|-----|---------|------|-----|------|...|---------------------...---|
+  | u8    | u8, | u8      | u8   | u8  |r.l   |   |            bits           |
+  |       | u16,|         |      |     |bits  |   |                           |
+  |       | u32 |         |      |     |      |   |                           |
+  +-------+-----+---------+------+-----+------+...+---------------------...---+
+                         /                     \
+                          repeats f.c.s.c times
+  header golssery:
+  ----------------
+  f.l.t   - file length type (possible values: 'c' (character), 's' (short) or 
+            'l' (long))
+  f.l     - file length
+  f.c.s.c - file char set chardinality
+  char    - character
+  r.l     - representation length
+  rep     - representation
+
+- the encoding is a sequence character encodings corresponding to the sequence
+  of characters in the uncompressed file. The character encodings are recorded
+  in the header.
+
+io
+==
+The huff_writer_t and huff_reader_t are defined as follows:
+
+typedef struct huff_io_t {
+    FILE *file;
+    u8 major_buf[MAX_MAJOR_BUF_SIZE];
+    u8 minor_buf;
+    u16 major_offset;
+    u8 minor_offset;
+    size_t buf_length;
+} huff_writer_t, huff_reader_t;
+
+  The reading and writing mechanisms are implemented in layers:
+
+  read/write u8/bit
+         |
+         |            int huff_read_bit(huff_reader_t *reader, bit_t *bit)
+	 |            int huff_read_u8(huff_reader_t *reader, u8 *character)
+	 |            int huff_write_bit(huff_writer_t *writer, bit_t bit)
+	 |            int huff_write_u8(huff_writer_t *writer, u8 character)
+	 |
+     minor_buf
+         |
+         |            int huff_read_minor_buf(huff_reader_t *reader)
+	 |            int huff_write_minor_buf(huff_writer_t *writer)
+	 |
+     major_buf
+         |
+         |            int huff_read_major_buf(huff_reader_t *reader)
+	 |            int huff_write_major_buf(huff_writer_t *writer)
+	 |
+        file
+ 
+- reading files
+  Files are read in blocks of size MAX_MAJOR_BUF_SIZE bytes into the reader's 
+  major_buf. major_buf is then read u8 at a time into the minor buf. The 
+  minor_buf can be read in bulks of 8 bits or 1 bit at a time.
+  reading flow:
+  
+  while not end of file
+    while major_offset is not reset
+      if read u8
+        read minor_buf
+        perform huff_read_minor_buf() to complete reading 8 bits
+      if read bit
+        while minor_offset is not reset
+          read an extra bit from minor_buf
+          advance minor_offset % MAX_MINOR_BUF_SIZE
+        perform huff_read_minor_buf()
+    perform huff_read_major_buf()
+
+The following methods are used for reading:
+- int huff_read_bit(huff_reader_t *reader, bit_t *bit);
+- int huff_read_u8(huff_reader_t *reader, u8 *character);
+- int huff_read_u16(huff_reader_t *reader, u16 *srt);
+- int huff_read_u32(huff_reader_t *reader, u32 *lng);
+
+- writing files
+  Files are written in blocks of size MAX_MAJOR_BUF_SIZE bytes from the 
+  reader's major_buf. The major buf is written a u8 at a time from the minor 
+  buf. The minor buf is written in bulks of 8 bits or 1 bit at a time.
+  writing flow:
+  
+  while there is more to write
+    while buf_length < MAX_MAJOR_BUF_SIZE
+      if write u8
+        perform huff_write_minor_buf()
+	fill an extra minor_offset bits in minor_buf
+      if write bit
+        while minor_offset is not reset
+          write an extra bit into minor_buf
+          advance minor_offset % MAX_MINOR_BUF_SIZE
+        perform huff_write_minor_buf()
+    perform huff_write_major_buf()
+
+The following methods are used for writing:
+- int huff_write_bit(huff_writer_t *writer, bit_t bit);
+- int huff_write_u8(huff_writer_t *writer, u8 character);
+- int huff_write_u16(huff_writer_t *writer, u16 srt);
+- int huff_write_u32(huff_writer_t *writer, u32 lng);
+
+Building the huffman tree and dictionary
+========================================
+The following stucture and data type are defined for the creation of a huffman
+tree and dictionary:
+
+huffman.h defines:
+typedef struct node {
+    struct node *left_son;
+    struct node *right_son;
+    struct node *next;
+    u8 character;
+    int frequency;
+} huff_tree_node_t;
+bit_t *dictionary[ANSI_CHAR_SET_CARDINALITY];
+
+huffman.c defines:
+huff_tree_node_t *tree_root;
+u32 frequency[ANSI_CHAR_SET_CARDINALITY];
+
+During encoding
+---------------
+Building the frequency table:
+For each character c, where 0 <= c <= ANSI_CHAR_SET_CARDINALITY, frequency[c]
+represents the number of occurences of c in the text file. The value of
+frequency[c] is determined by an initial reading of the file, one character at a
+time, each time increasing the relevent value in frequency[].
+
+Building the tree:
+Once the frequency table has been created, it is traverssed to create a minimum
+priority queue, rooted at tree_root.
+Once the priority queue has been ceated the algorithm presented in the preview
+section is used to build the tree itself.
+
+Building the dictionary:
+Once the huffman tree has been created, it is used to create a dictionary.
+the dictionary contains a direction stack for each character that appears in the
+tree.
+
+During decoding
+---------------
+Reconstructing the dictionary:
+The compressed file's header is initially parsed to create a dictionary. The
+dictionary consists of bit_t* stacks which indicate the bit sequence
+corresponding to each character in the text file.
+
+Reconstructing the tree:
+Once the dictionary has been created, it is traverssed. For each sequence stack
+that is found a corresponding path is completed in the huffman tree rooted at
+tree_root (a prefex of the path may have been created for a previous
+character).
+
+Naming the compressed/uncompressed file
+=======================================
+The buffers
+char uncompressed_file_name[MAX_FILE_NAME_SIZE];
+char compressed_file_name[MAX_FILE_NAME_SIZE];
+are used to hold the names of the uncompressed file and the compressed file
+respectively. huffman.c:huff_set_names() receives one of the names as and
+argument (from the command line) and uses it to produce the other.
+
+Encoding
+========
+The encoding procedure is coded in huffman_encoder.c
+The flow, as described above, is handled by the following functions:
+
+int huff_encoder_prologue(huff_reader_t **r_ptr, huff_writer_t **w_ptr)
+  - initiates the reader and the writer
+
+int huff_encoder_parse(huff_reader_t *reader)
+  - first pass over the uncompressed file:
+    - calculates the frequency of each character used in the file
+    - calculates the total length of the file
+
+int huff_encoder_create_tree()
+  - creates a minimum priority queue over the character frequencies
+  - creates a huffman tree from the minimum priority queue
+  - calculates tree_hight
+
+int huff_encoder_create_dictionary()
+  - creates a huffman dictionary for encoding each character in the file
+    - creates a stack of size tree_hight to contain a character representation
+    - uses the recursive function huff_encoder_dictionary_gen() to fill and copy
+      the stack into the bit_t *dictionary[ANSI_CHAR_SET_CARDINALITY] array
+
+int huff_encoder_compress(huff_reader_t *reader, huff_writer_t *writer)
+  - creates the encoded file
+    - uses huff_encoder_write_header() to write the header to the encoded file
+    - uses huff_encoder_write_data() to write the encoding to the encoded file
+	
+int huff_encoder_epilogue(huff_reader_t *reader, huff_writer_t *writer)
+  - performes general cleaning up and output functions
+
+Decoding
+========
+The decoding procedure is coded in huffman_decoder.c
+The flow, as described above, is handled by the following functions:
+
+int huff_decoder_prologue(huff_reader_t **r_ptr, huff_writer_t **w_ptr)
+  - initiates the reader and the writer
+
+int huff_decoder_parse_header(huff_reader_t *reader, huff_writer_t *writer)
+  - reads f.l.t, f.l, f.c.s.c fields from header
+  - reads character representations and creates a huffman dictionary
+
+int huff_decoder_creat_tree()
+  - uses the huffman dictionary to create a corresponding huffman tree
+
+int huff_decoder_decompress(huff_reader_t *reader, huff_writer_t *writer)
+  - creates the decoded file
+
+int huff_decoder_epilogue(huff_reader_t *reader, huff_writer_t *writer)
+  - performes general cleaning up and output functions
+
+Special cases
+=============
+
+zero length files
+-----------------
+The file is not encoded/decoded and an error message is given.
+
+files with a character set consisting of one character only
+-----------------------------------------------------------
+encoding
+- a huffman tree is not created
+- a huffman dictionary is not created
+- the char, representation length and representation are not written to header
+- the character itself is written once following the file character set
+  cardinality
+decoding
+- a huffman dictionary is not created
+- a huffman tree is not created
+- the single character is written uncompressed_file_length times
+
+input error handing
+-------------------
+All input is dealt with in huffman.c:huff_parse_command_line().
+
+
+
+Known issues
+============
+- When the -k option is not set, the encoded/decoded file will be deleted, even
+  if the decoding/encoding does not succeed.
+
