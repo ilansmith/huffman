@@ -26,8 +26,8 @@ uninstall:
 	rm -f $(MAN_DIR)/huffman.1
 
 clean:
-	rm -f *.o
+	rm -rf *.o
 
 cleanall:
-	rm -f *.o tags huffman
+	rm -rf *.o tags huffman
 
