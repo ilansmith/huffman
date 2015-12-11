@@ -211,9 +211,7 @@ bit_t *bit_stack_clone(bit_t *stack, int offset)
 	return NULL;
 
     for (i = 0; i < offset; i++)
-    {
 	new_stack[i] = stack[i];
-    }
     new_stack[offset] = NO_BIT;
     return new_stack;
 }

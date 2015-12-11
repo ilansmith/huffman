@@ -339,9 +339,7 @@ static int huff_encoder_write_header(huff_writer_t *writer)
 
     /* writer character set cardinality */
     if (huff_encoder_write_character_set_cardinality(writer))
-    {
 	return -1;
-    }
 
     /* if character_set_cardinality == 1 no dictionary is needed */
     if (character_set_cardinality == 1)
