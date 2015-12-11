@@ -14,8 +14,8 @@ huffman: huffman.o huffman_decoder.o huffman_encoder.o huffman_io.o
 	-lm
 
 install:
-	install -C --strip --mode=755 huffman $(APP_DIR)
-	install -C man1/huffman.1 $(MAN_DIR)
+	install --strip --mode=755 huffman $(APP_DIR)
+	install man1/huffman.1 $(MAN_DIR)
 
 uninstall:
 	rm -f $(APP_DIR)/huffman
