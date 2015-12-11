@@ -326,8 +326,7 @@ static int huff_parse_command_line(int argc, char* argv[])
     char option;
     int ret = 0, expected_arg_num = 3;
 
-    while (((option = getopt(argc, argv, HUFFMAN_OPTIONS)) != -1) &&
-	!(ret & HUFFMAN_OPT_ENCODE) && !(ret & HUFFMAN_OPT_DECODE))
+    while (((option = getopt(argc, argv, HUFFMAN_OPTIONS)) != -1))
     {
 	switch (option)
 	{
@@ -359,7 +358,7 @@ static int huff_parse_command_line(int argc, char* argv[])
 	    ret |= HUFFMAN_OPT_STATISTICS;
 	    break;
 	case 'e':
-	    if ((ret & HUFFMAN_OPT_DECODE) ||
+	    if ((ret & (HUFFMAN_OPT_ENCODE | HUFFMAN_OPT_DECODE)) ||
 		huff_set_names(optarg, huff_compress_file_name(optarg)))
 	    {
 		goto Error;
@@ -367,7 +366,7 @@ static int huff_parse_command_line(int argc, char* argv[])
 	    ret |= HUFFMAN_OPT_ENCODE;
 	    break;
 	case 'd':
-	    if ((ret & HUFFMAN_OPT_ENCODE) ||
+	    if ((ret & (HUFFMAN_OPT_ENCODE | HUFFMAN_OPT_DECODE)) ||
 		huff_set_names(huff_uncompress_file_name(optarg), optarg))
 	    {
 		goto Error;
